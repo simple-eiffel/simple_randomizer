@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>simple_randomizer - Random Data Generation for Eiffel</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="images/logo.png">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="images/logo.png" alt="simple_* logo" class="logo">
+        </div>
+        <h1>simple_randomizer</h1>
+        <p class="tagline">Lightweight Random Data Generation for Eiffel Testing</p>
+        <div class="badges">
+            <span class="badge badge-rfc">Foundation Layer</span>
+            <span class="badge badge-version">v1.0.0</span>
+            <span class="badge badge-license">MIT</span>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#quick-start">Quick Start</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#api">API Reference</a></li>
+            <li><a href="https://github.com/ljr1981/simple_randomizer">GitHub</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="overview">
+            <h2>Overview</h2>
+            <p>
+                <strong>simple_randomizer</strong> provides core randomization features for generating
+                test data without domain-specific baggage or file dependencies. It's a lean replacement
+                for heavier randomizer libraries.
+            </p>
+            <p>
+                Part of the <strong>simple_*</strong> ecosystem of focused, single-purpose Eiffel libraries.
+            </p>
+        </section>
+
+        <section id="quick-start">
+            <h2>Quick Start</h2>
+            <h3>Installation</h3>
+            <pre><code>&lt;library name="simple_randomizer" location="$SIMPLE_RANDOMIZER\simple_randomizer.ecf"/&gt;</code></pre>
+
+            <h3>Basic Usage</h3>
+            <pre><code>local
+    randomizer: SIMPLE_RANDOMIZER
+    name: STRING
+    age: INTEGER
+    hire_date: DATE
+do
+    -- Time-based seed (non-reproducible)
+    create randomizer.make
+
+    -- Or fixed seed for reproducible tests
+    -- create randomizer.make_with_seed (12345)
+
+    name := randomizer.random_word_capitalized
+    age := randomizer.random_integer_in_range (18 |..| 65)
+    hire_date := randomizer.random_date_in_past_days (365)
+end</code></pre>
+
+            <h3>Pronounceable Words</h3>
+            <pre><code>-- Generate readable random words
+randomizer.random_word           -- "teko", "vami", "belu"
+randomizer.random_word_capitalized -- "Teko", "Vami"
+randomizer.random_sentence       -- "Mebo tiva kelu rano."
+randomizer.random_paragraph      -- Multiple sentences</code></pre>
+        </section>
+
+        <section id="features">
+            <h2>Features</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Random Numbers</h4>
+                    <p>Integers, reals, booleans with range support</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Random Strings</h4>
+                    <p>Words, sentences, paragraphs, identifiers</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Random Dates</h4>
+                    <p>Past, future, ranges, around now</p>
+                </div>
+                <div class="feature-card">
+                    <h4>UUID Generation</h4>
+                    <p>Full UUID, string, and compact formats</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Reproducible</h4>
+                    <p>Seed-based deterministic randomness for tests</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Design by Contract</h4>
+                    <p>Full preconditions and postconditions</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="api">
+            <h2>API Reference</h2>
+
+            <h3>Creation</h3>
+            <table>
+                <tr><th>Feature</th><th>Description</th></tr>
+                <tr><td><code>make</code></td><td>Time-based seed (non-reproducible)</td></tr>
+                <tr><td><code>make_with_seed (seed)</code></td><td>Fixed seed for reproducible sequences</td></tr>
+            </table>
+
+            <h3>Random Numbers</h3>
+            <table>
+                <tr><th>Feature</th><th>Description</th></tr>
+                <tr><td><code>random_integer</code></td><td>Random integer</td></tr>
+                <tr><td><code>random_integer_in_range (range)</code></td><td>Integer within INTEGER_INTERVAL</td></tr>
+                <tr><td><code>random_real</code></td><td>Real between 0 and 1</td></tr>
+                <tr><td><code>random_real_in_range (lower, upper)</code></td><td>Real within bounds</td></tr>
+                <tr><td><code>random_boolean</code></td><td>50/50 true/false</td></tr>
+                <tr><td><code>random_boolean_weighted (percent)</code></td><td>Weighted probability</td></tr>
+                <tr><td><code>unique_integers (count, range)</code></td><td>Array of unique integers</td></tr>
+            </table>
+
+            <h3>Random Characters</h3>
+            <table>
+                <tr><th>Feature</th><th>Description</th></tr>
+                <tr><td><code>random_digit</code></td><td>'0'..'9'</td></tr>
+                <tr><td><code>random_letter_lower</code></td><td>'a'..'z'</td></tr>
+                <tr><td><code>random_letter_upper</code></td><td>'A'..'Z'</td></tr>
+                <tr><td><code>random_letter</code></td><td>Any case letter</td></tr>
+                <tr><td><code>random_alphanumeric</code></td><td>Letter or digit</td></tr>
+                <tr><td><code>random_character_from (string)</code></td><td>Character from source</td></tr>
+            </table>
+
+            <h3>Random Strings</h3>
+            <table>
+                <tr><th>Feature</th><th>Description</th></tr>
+                <tr><td><code>random_digits (length)</code></td><td>String of digits</td></tr>
+                <tr><td><code>random_letters (length)</code></td><td>String of lowercase letters</td></tr>
+                <tr><td><code>random_alphanumeric_string (length)</code></td><td>Mixed string</td></tr>
+                <tr><td><code>random_word</code></td><td>Pronounceable word (2-3 syllables)</td></tr>
+                <tr><td><code>random_word_capitalized</code></td><td>Capitalized word</td></tr>
+                <tr><td><code>random_words (count)</code></td><td>Space-separated words</td></tr>
+                <tr><td><code>random_sentence</code></td><td>Capitalized with period</td></tr>
+                <tr><td><code>random_paragraph</code></td><td>Multiple sentences</td></tr>
+                <tr><td><code>random_identifier</code></td><td>Code-safe identifier</td></tr>
+            </table>
+
+            <h3>Random Dates</h3>
+            <table>
+                <tr><th>Feature</th><th>Description</th></tr>
+                <tr><td><code>random_date_in_past_days (days)</code></td><td>Date within N days ago</td></tr>
+                <tr><td><code>random_date_in_future_days (days)</code></td><td>Date within N days ahead</td></tr>
+                <tr><td><code>random_date_in_range (start, end)</code></td><td>Date between bounds</td></tr>
+                <tr><td><code>random_date_around_now (days)</code></td><td>Date +/- N days from today</td></tr>
+            </table>
+
+            <h3>UUID Generation</h3>
+            <table>
+                <tr><th>Feature</th><th>Description</th></tr>
+                <tr><td><code>random_uuid</code></td><td>UUID object</td></tr>
+                <tr><td><code>random_uuid_string</code></td><td>Hyphenated format (36 chars)</td></tr>
+                <tr><td><code>random_uuid_compact</code></td><td>No hyphens (32 chars)</td></tr>
+            </table>
+
+            <h3>Selection</h3>
+            <table>
+                <tr><th>Feature</th><th>Description</th></tr>
+                <tr><td><code>random_item_from_array (array)</code></td><td>Random array element</td></tr>
+                <tr><td><code>random_string_from_list (list)</code></td><td>Random string from array</td></tr>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>Part of the <a href="https://github.com/ljr1981">simple_*</a> library collection</p>
+        <p>Dependencies: base, time, uuid</p>
+        <p class="copyright">MIT License - Copyright (c) 2024-2025, Larry Rix</p>
+    </footer>
+</body>
+</html>

@@ -4,6 +4,8 @@
 
 # SIMPLE_RANDOMIZER
 
+**[Documentation](https://ljr1981.github.io/simple_randomizer/)**
+
 Lightweight random data generation library for Eiffel testing.
 
 ## Overview
