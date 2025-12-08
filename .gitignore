@@ -37,3 +37,4 @@ doc/
 
 # Test results
 test_results/
+*.rc

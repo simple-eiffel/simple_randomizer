@@ -1,6 +1,6 @@
 note
 	description: "Tests for SIMPLE_RANDOMIZER"
-	testing: "type/manual"
+	testing: "covers"
 	date: "$Date$"
 	revision: "$Revision$"
 
