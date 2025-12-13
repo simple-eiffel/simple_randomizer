@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	TEST_SIMPLE_RANDOMIZER
+	LIB_TESTS
 
 inherit
 	TEST_SET_BASE
