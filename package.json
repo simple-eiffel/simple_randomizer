@@ -1,0 +1,9 @@
+{
+  "name": "simple_randomizer",
+  "version": "0.1.0",
+  "description": "Simple Randomizer Library - Lightweight random data generation for testing",
+  "author": "Larry Rix",
+  "license": "MIT",
+  "category": "utilities",
+  "keywords": ["random", "generator", "shuffle"]
+}
