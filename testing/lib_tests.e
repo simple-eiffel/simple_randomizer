@@ -13,7 +13,7 @@ inherit
 			on_prepare
 		end
 
-feature {NONE} -- Initialization
+feature -- Initialization
 
 	on_prepare
 			-- Called before tests.
@@ -349,12 +349,12 @@ feature -- Test: UUID
 		note
 			testing: "execution/isolated"
 		local
-			u1, u2: UUID
+			u1, u2: STRING
 		do
 			u1 := randomizer.random_uuid
 			u2 := randomizer.random_uuid
 			assert ("uuid created", u1 /= Void)
-			assert ("different uuids", not u1.is_equal (u2))
+			assert ("different uuids", not u1.same_string (u2))
 		end
 
 	test_random_uuid_string

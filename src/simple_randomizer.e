@@ -367,24 +367,44 @@ feature -- Random Dates
 			Result := l_now.plus_days (l_offset)
 		end
 
+
 feature -- UUID Generation
 
-	random_uuid: UUID
-			-- A random UUID.
+	random_uuid: STRING
+			-- A random UUID v4 as hyphenated string (xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx).
+		local
+			b: ARRAY [NATURAL_8]
+			i: INTEGER
 		do
-			create Result.make (
-				random_integer.to_natural_32,
-				random_integer.to_natural_16,
-				random_integer.to_natural_16,
-				random_integer.to_natural_16,
-				random_integer.to_natural_64
-			)
+			-- Generate 16 random bytes
+			create b.make_filled (0, 1, 16)
+			across 1 |..| 16 as ic loop
+				random_sequence.forth
+				b [ic.item] := (random_sequence.item \\ 256).to_natural_8
+			end
+			-- Set version to 4 (0100 in high nibble of byte 7)
+			b [7] := (b [7] & 0x0F) | 0x40
+			-- Set variant to RFC 4122 (10xx in high bits of byte 9)
+			b [9] := (b [9] & 0x3F) | 0x80
+			-- Format as string: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+			create Result.make (36)
+			from i := 1 until i > 16 loop
+				if i = 5 or i = 7 or i = 9 or i = 11 then
+					Result.append_character ('-')
+				end
+				Result.append (byte_to_hex (b [i]))
+				i := i + 1
+			end
+		ensure
+			valid_format: Result.occurrences ('-') = 4
+			correct_length: Result.count = 36
 		end
 
 	random_uuid_string: STRING
 			-- A random UUID as hyphenated string.
+			-- Same as `random_uuid', provided for API compatibility.
 		do
-			Result := random_uuid.out
+			Result := random_uuid
 		ensure
 			valid_format: Result.occurrences ('-') = 4
 		end
@@ -392,13 +412,27 @@ feature -- UUID Generation
 	random_uuid_compact: STRING
 			-- A random UUID as string without hyphens.
 		do
-			Result := random_uuid_string
+			Result := random_uuid
 			Result.replace_substring_all ("-", "")
 		ensure
 			no_hyphens: not Result.has ('-')
 			correct_length: Result.count = 32
 		end
 
+feature {NONE} -- UUID Implementation
+
+	byte_to_hex (a_byte: NATURAL_8): STRING
+			-- Convert byte to 2-character lowercase hex string.
+		local
+			l_hex: STRING
+		do
+			l_hex := "0123456789abcdef"
+			create Result.make (2)
+			Result.append_character (l_hex [(a_byte |>> 4).to_integer_32 + 1])
+			Result.append_character (l_hex [(a_byte & 0x0F).to_integer_32 + 1])
+		ensure
+			correct_length: Result.count = 2
+		end
 feature -- Selection
 
 	random_item_from_array (a_array: ARRAY [ANY]): ANY
