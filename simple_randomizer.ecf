@@ -16,7 +16,7 @@
 			<concurrency support="scoop" use="thread"/>
 		</capability>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
-		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
+		<library name="simple_datetime" location="$SIMPLE_DATETIME/simple_datetime.ecf"/>
 		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf"/>
 		<cluster name="src" location=".\src\" recursive="true"/>
 	</target>

@@ -301,13 +301,13 @@ feature -- Test: Random Dates
 		note
 			testing: "execution/isolated"
 		local
-			d, today: DATE
+			d, today: SIMPLE_DATE
 		do
 			create today.make_now
 			across 1 |..| 10 as ic loop
 				d := randomizer.random_date_in_past_days (30)
 				assert ("in past " + ic.item.out, d < today)
-				assert ("within 30 days " + ic.item.out, today.days - d.days <= 30)
+				assert ("within 30 days " + ic.item.out, d.days_between (today) <= 30)
 			end
 		end
 
@@ -316,13 +316,13 @@ feature -- Test: Random Dates
 		note
 			testing: "execution/isolated"
 		local
-			d, today: DATE
+			d, today: SIMPLE_DATE
 		do
 			create today.make_now
 			across 1 |..| 10 as ic loop
 				d := randomizer.random_date_in_future_days (30)
 				assert ("in future " + ic.item.out, d > today)
-				assert ("within 30 days " + ic.item.out, d.days - today.days <= 30)
+				assert ("within 30 days " + ic.item.out, today.days_between (d) <= 30)
 			end
 		end
 
@@ -331,7 +331,7 @@ feature -- Test: Random Dates
 		note
 			testing: "execution/isolated"
 		local
-			d, start_date, end_date: DATE
+			d, start_date, end_date: SIMPLE_DATE
 		do
 			create start_date.make (2024, 1, 1)
 			create end_date.make (2024, 12, 31)

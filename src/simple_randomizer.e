@@ -34,14 +34,11 @@ feature {NONE} -- Initialization
 	make
 			-- Create with time-based seed for non-reproducible randomness.
 		local
-			l_time: TIME
+			l_dt: SIMPLE_DATE_TIME
 			l_seed: INTEGER
 		do
-			create l_time.make_now
-			l_seed := l_time.hour
-			l_seed := l_seed * 60 + l_time.minute
-			l_seed := l_seed * 60 + l_time.second
-			l_seed := l_seed * 1000 + l_time.milli_second
+			create l_dt.make_now
+			l_seed := (l_dt.to_timestamp \\ 1000000).as_integer_32
 			create random_sequence.set_seed (l_seed)
 		end
 
@@ -322,47 +319,52 @@ feature -- Random Strings
 
 feature -- Random Dates
 
-	random_date_in_past_days (a_days: INTEGER): DATE
+	random_date_in_past_days (a_days: INTEGER): SIMPLE_DATE
 			-- A random date within `a_days' ago.
 		require
 			positive_days: a_days > 0
+		local
+			l_now: SIMPLE_DATE
 		do
-			create Result.make_now
-			Result.day_add (random_integer_in_range (1 |..| a_days) * -1)
+			create l_now.make_now
+			Result := l_now.minus_days (random_integer_in_range (1 |..| a_days))
 		end
 
-	random_date_in_future_days (a_days: INTEGER): DATE
+	random_date_in_future_days (a_days: INTEGER): SIMPLE_DATE
 			-- A random date within `a_days' from now.
 		require
 			positive_days: a_days > 0
+		local
+			l_now: SIMPLE_DATE
 		do
-			create Result.make_now
-			Result.day_add (random_integer_in_range (1 |..| a_days))
+			create l_now.make_now
+			Result := l_now.plus_days (random_integer_in_range (1 |..| a_days))
 		end
 
-	random_date_in_range (a_start, a_end: DATE): DATE
+	random_date_in_range (a_start, a_end: SIMPLE_DATE): SIMPLE_DATE
 			-- A random date between `a_start' and `a_end'.
 		require
 			valid_range: a_start <= a_end
 		local
 			l_days: INTEGER
 		do
-			l_days := a_end.days - a_start.days
-			create Result.make_by_days (a_start.days + random_integer_in_range (0 |..| l_days))
+			l_days := a_start.days_between (a_end)
+			Result := a_start.plus_days (random_integer_in_range (0 |..| l_days))
 		ensure
 			in_range: Result >= a_start and Result <= a_end
 		end
 
-	random_date_around_now (a_days_range: INTEGER): DATE
+	random_date_around_now (a_days_range: INTEGER): SIMPLE_DATE
 			-- A random date within +/- `a_days_range' from today.
 		require
 			positive_range: a_days_range > 0
 		local
+			l_now: SIMPLE_DATE
 			l_offset: INTEGER
 		do
 			l_offset := random_integer_in_range (-a_days_range |..| a_days_range)
-			create Result.make_now
-			Result.day_add (l_offset)
+			create l_now.make_now
+			Result := l_now.plus_days (l_offset)
 		end
 
 feature -- UUID Generation
