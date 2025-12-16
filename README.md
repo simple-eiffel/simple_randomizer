@@ -24,13 +24,13 @@ SIMPLE_RANDOMIZER provides core randomization features for generating test data 
 ## Installation
 
 1. Clone or download this repository
-2. Set the environment variable:
+2. Set the ecosystem environment variable (one-time setup for all simple_* libraries):
    ```powershell
-   [System.Environment]::SetEnvironmentVariable('SIMPLE_RANDOMIZER', 'path\to\simple_randomizer', 'User')
+   [System.Environment]::SetEnvironmentVariable('SIMPLE_EIFFEL', 'D:\prod', 'User')
    ```
 3. Add to your ECF:
    ```xml
-   <library name="simple_randomizer" location="$SIMPLE_RANDOMIZER\simple_randomizer.ecf"/>
+   <library name="simple_randomizer" location="$SIMPLE_EIFFEL/simple_randomizer/simple_randomizer.ecf"/>
    ```
 
 ## Usage
