@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `random_gaussian (mean, std)`: Box-Muller normal draws (gap G-2 for simple_tensor weight initialization). Test checks mean/std over 100,000 draws, determinism by seed, and zero spread. Dependents type-check clean (simple_web; its 40 obsolete-call warnings are pre-existing EWF/OAuth code).
+
 ### Changed
 - Testing config updates, AutoTest fixes, .gitignore cleanup
 - Migrate to simple_testing library

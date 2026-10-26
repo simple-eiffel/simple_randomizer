@@ -67,6 +67,35 @@ feature -- Test: Random Numbers
 			end
 		end
 
+	test_random_gaussian
+			-- 100,000 draws of N(2, 3): sample mean within 3·σ/√n (0.0285) of 2 and sample
+			-- standard deviation within 0.03 of 3; same seed, same first draws; std 0 gives the mean.
+		note
+			testing: "execution/isolated"
+		local
+			r1, r2: SIMPLE_RANDOMIZER
+			v, l_sum, l_sum_sq, l_mean, l_std: REAL_64
+			n: INTEGER
+		do
+			create r1.make_with_seed (12345)
+			n := 100_000
+			across 1 |..| n as ic loop
+				v := r1.random_gaussian (2.0, 3.0)
+				l_sum := l_sum + v
+				l_sum_sq := l_sum_sq + v * v
+			end
+			l_mean := l_sum / n
+			l_std := {DOUBLE_MATH}.sqrt (l_sum_sq / n - l_mean * l_mean)
+			assert ("mean " + l_mean.out, (l_mean - 2.0).abs <= 0.0285)
+			assert ("std " + l_std.out, (l_std - 3.0).abs <= 0.03)
+			create r1.make_with_seed (777)
+			create r2.make_with_seed (777)
+			across 1 |..| 5 as ic loop
+				assert ("deterministic " + ic.item.out, r1.random_gaussian (0.0, 1.0) = r2.random_gaussian (0.0, 1.0))
+			end
+			assert ("zero spread", r1.random_gaussian (4.5, 0.0) = 4.5)
+		end
+
 	test_random_real_in_range
 			-- Test random_real_in_range respects bounds.
 		note

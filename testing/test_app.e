@@ -30,6 +30,7 @@ feature {NONE} -- Initialization
 			run_test (agent tests.test_random_integer_in_range, "test_random_integer_in_range")
 			run_test (agent tests.test_random_real, "test_random_real")
 			run_test (agent tests.test_random_real_in_range, "test_random_real_in_range")
+			run_test (agent tests.test_random_gaussian, "test_random_gaussian")
 			run_test (agent tests.test_random_boolean, "test_random_boolean")
 			run_test (agent tests.test_random_boolean_weighted, "test_random_boolean_weighted")
 			run_test (agent tests.test_unique_integers, "test_unique_integers")
