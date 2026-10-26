@@ -67,6 +67,10 @@ feature {NONE} -- Initialization
 			-- Reproducibility
 			run_test (agent tests.test_seeded_reproducibility, "test_seeded_reproducibility")
 
+			-- Philox4x32-10
+			run_test (agent tests.test_philox_known_answers, "test_philox_known_answers")
+			run_test (agent tests.test_philox_stream, "test_philox_stream")
+
 			print ("%N==============================%N")
 			print ("Results: " + passed.out + " passed, " + failed.out + " failed%N")
 
