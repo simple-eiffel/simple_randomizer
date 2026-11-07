@@ -67,6 +67,35 @@ feature -- Test: Random Numbers
 			end
 		end
 
+	test_random_gaussian
+			-- 100,000 draws of N(2, 3): sample mean within 3·σ/√n (0.0285) of 2 and sample
+			-- standard deviation within 0.03 of 3; same seed, same first draws; std 0 gives the mean.
+		note
+			testing: "execution/isolated"
+		local
+			r1, r2: SIMPLE_RANDOMIZER
+			v, l_sum, l_sum_sq, l_mean, l_std: REAL_64
+			n: INTEGER
+		do
+			create r1.make_with_seed (12345)
+			n := 100_000
+			across 1 |..| n as ic loop
+				v := r1.random_gaussian (2.0, 3.0)
+				l_sum := l_sum + v
+				l_sum_sq := l_sum_sq + v * v
+			end
+			l_mean := l_sum / n
+			l_std := {DOUBLE_MATH}.sqrt (l_sum_sq / n - l_mean * l_mean)
+			assert ("mean " + l_mean.out, (l_mean - 2.0).abs <= 0.0285)
+			assert ("std " + l_std.out, (l_std - 3.0).abs <= 0.03)
+			create r1.make_with_seed (777)
+			create r2.make_with_seed (777)
+			across 1 |..| 5 as ic loop
+				assert ("deterministic " + ic.item.out, r1.random_gaussian (0.0, 1.0) = r2.random_gaussian (0.0, 1.0))
+			end
+			assert ("zero spread", r1.random_gaussian (4.5, 0.0) = 4.5)
+		end
+
 	test_random_real_in_range
 			-- Test random_real_in_range respects bounds.
 		note
@@ -422,7 +451,78 @@ feature -- Test: Reproducibility
 			assert ("same sequence with same seed", l_same)
 		end
 
+feature -- Test: Philox4x32-10 (counter-based)
+
+	test_philox_known_answers
+			-- The three Random123 known-answer vectors (tests/kat_vectors, philox4x32 10):
+			-- counter and key all zero, all ones, and digits of pi.
+		note
+			testing: "execution/isolated"
+		do
+			assert_block ("zeros", 0, 0, 0, 0, 0, 0, <<0x6627e8d5, 0xe169c58d, 0xbc57ac4c, 0x9b00dbd8>>)
+			assert_block ("ones", 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
+				<<0x408f276d, 0x41c83b0e, 0xa20bc7c6, 0x6d5451fd>>)
+			assert_block ("pi", 0x243f6a88, 0x85a308d3, 0x13198a2e, 0x03707344, 0xa4093822, 0x299f31d0,
+				<<0xd16cfe09, 0x94fdcceb, 0x5001e420, 0x24126ea1>>)
+		end
+
+	test_philox_stream
+			-- word n = block (n // 4, stream) [n \\ 4]; forth/item and go_to agree with word;
+			-- streams differ; 100,000 unit reals average 0.5 within 3 sigma (0.0027).
+		note
+			testing: "execution/isolated"
+		local
+			p, q: SIMPLE_PHILOX
+			b: SPECIAL [NATURAL_32]
+			i: INTEGER
+			l_sum: REAL_64
+			l_differ: BOOLEAN
+		do
+			create p.make (0x0123456789ABCDEF, 7)
+			assert ("seed round trip", p.seed = 0x0123456789ABCDEF)
+			b := p.block (2, 0, 7, 0)
+			assert ("word 8 is block 2 word 0", p.word (8) = b [0])
+			assert ("word 11 is block 2 word 3", p.word (11) = b [3])
+			b := p.block (0, 1, 7, 0)
+			assert ("high counter word", p.word ((1).to_natural_64 |<< 34) = b [0])
+			from i := 0 until i = 20 loop
+				assert ("item " + i.out, p.item = p.word (i.to_natural_64))
+				p.forth
+				i := i + 1
+			end
+			p.go_to (1_000_000_000_000)
+			assert ("jump", p.item = p.word (1_000_000_000_000))
+			create q.make (0x0123456789ABCDEF, 8)
+			from i := 0 until i = 8 loop
+				l_differ := l_differ or p.word (i.to_natural_64) /= q.word (i.to_natural_64)
+				i := i + 1
+			end
+			assert ("streams differ", l_differ)
+			p.set_stream (7)
+			from i := 1 until i > 100_000 loop
+				l_sum := l_sum + p.unit_item
+				p.forth
+				i := i + 1
+			end
+			assert ("mean " + (l_sum / 100_000).out, (l_sum / 100_000 - 0.5).abs < 0.0027)
+		end
+
 feature {NONE} -- Implementation
+
+	assert_block (a_label: STRING; c0, c1, c2, c3, k0, k1: NATURAL_32; a_expected: ARRAY [NATURAL_32])
+			-- Philox4x32-10 of counter <c0..c3> under key <k0, k1> equals `a_expected'.
+		local
+			p: SIMPLE_PHILOX
+			b: SPECIAL [NATURAL_32]
+			i: INTEGER
+		do
+			create p.make_with_key (k0, k1, 0)
+			b := p.block (c0, c1, c2, c3)
+			from i := 0 until i = 4 loop
+				assert (a_label + " word " + i.out + ": " + b [i].to_hex_string, b [i] = a_expected [i + 1])
+				i := i + 1
+			end
+		end
 
 	randomizer: SIMPLE_RANDOMIZER
 			-- Randomizer under test

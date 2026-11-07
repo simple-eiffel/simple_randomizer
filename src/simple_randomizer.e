@@ -88,6 +88,22 @@ feature -- Random Numbers
 			in_range: Result >= a_lower and Result <= a_upper
 		end
 
+	random_gaussian (a_mean, a_std: REAL_64): REAL_64
+			-- A normally distributed real with mean `a_mean' and standard
+			-- deviation `a_std' (Box–Muller, one draw per call; uses two uniforms).
+		require
+			std_non_negative: a_std >= 0.0
+		local
+			l_u1, l_u2: REAL_64
+		do
+				-- u1 in (0, 1] so the logarithm is finite.
+			l_u1 := 1.0 - random_real
+			l_u2 := random_real
+			Result := a_mean + a_std * {DOUBLE_MATH}.sqrt (-2.0 * {DOUBLE_MATH}.log (l_u1)) * {DOUBLE_MATH}.cosine (2.0 * {DOUBLE_MATH}.pi * l_u2)
+		ensure
+			zero_spread: a_std = 0.0 implies Result = a_mean
+		end
+
 	random_boolean: BOOLEAN
 			-- A random boolean (approximately 50/50).
 		do

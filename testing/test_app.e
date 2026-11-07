@@ -30,6 +30,7 @@ feature {NONE} -- Initialization
 			run_test (agent tests.test_random_integer_in_range, "test_random_integer_in_range")
 			run_test (agent tests.test_random_real, "test_random_real")
 			run_test (agent tests.test_random_real_in_range, "test_random_real_in_range")
+			run_test (agent tests.test_random_gaussian, "test_random_gaussian")
 			run_test (agent tests.test_random_boolean, "test_random_boolean")
 			run_test (agent tests.test_random_boolean_weighted, "test_random_boolean_weighted")
 			run_test (agent tests.test_unique_integers, "test_unique_integers")
@@ -65,6 +66,10 @@ feature {NONE} -- Initialization
 
 			-- Reproducibility
 			run_test (agent tests.test_seeded_reproducibility, "test_seeded_reproducibility")
+
+			-- Philox4x32-10
+			run_test (agent tests.test_philox_known_answers, "test_philox_known_answers")
+			run_test (agent tests.test_philox_stream, "test_philox_stream")
 
 			print ("%N==============================%N")
 			print ("Results: " + passed.out + " passed, " + failed.out + " failed%N")
